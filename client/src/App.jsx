@@ -1,32 +1,38 @@
-import { Route, Routes } from "react-router-dom";
-import "./App.css";
-import SignIn from "./features/admin/SignIn";
-import SignUp from "./features/admin/SignUp";
-import { ToastContainer } from "react-toastify";
+import {Navigate, Route, Routes} from "react-router-dom";
+import "@/App.css";
+import SignIn from "@/features/admin/auth/SignIn";
+import SignUp from "@/features/admin/auth/SignUp";
+import {ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Dashboard from "./features/admin/Dashboard";
+import Dashboard from "@/features/admin/dashboard/Dashboard";
+import PanoramaImage from "@/features/pano-images/PanoramaImage";
+
 
 function App() {
-  return (
-    <div>
-      <Routes>
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
-      <ToastContainer
-        position="top-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-    </div>
-  );
+    return (
+        <>
+            <Routes>
+                <Route path="/">
+                    <Route path="/sign-in" element={<SignIn/>}/>
+                    <Route path="/sign-up" element={<SignUp/>}/>
+                    <Route path="/dashboard/*" element={<Dashboard/>}/>
+                    <Route index element={<PanoramaImage/>}/>
+                    <Route path="*" element={<Navigate to="/"/>}/>
+                </Route>
+            </Routes>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
+        </>
+    );
 }
 
 export default App;

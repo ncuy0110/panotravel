@@ -1,4 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { FileHelper } from './file.helper';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { MinioService } from 'nestjs-minio-client';
 
 @Injectable()
@@ -10,40 +11,25 @@ export class MinioClientService {
     return this.minio.client;
   }
 
-  constructor(
-    private readonly minio: MinioService,
-  ) {
+  constructor(private readonly minio: MinioService) {
     this.logger = new Logger('MinioStorageService');
     this.baseBucket = process.env.MINIO_BUCKET;
   }
 
-  public async getUrlPutObject(
-    objectName: string,
-    expiry: number = 15 * 60,
-    bucketName: string = this.baseBucket,
-  ) {
+  async putFile(
+    file: Express.Multer.File,
+    bucket: string = this.baseBucket,
+  ): Promise<string> {
     try {
-      const ext = objectName.substring(
-        objectName.lastIndexOf('.'),
-        objectName.length,
+      const newName = FileHelper.rename(file.originalname);
+      await this.client.putObject(this.baseBucket, newName, file.buffer);
+      return newName;
+    } catch (e) {
+      console.log(e);
+      throw new HttpException(
+        'upload image failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
-      objectName =
-        objectName.substring(0, objectName.lastIndexOf('.')) +
-        '_' +
-        new Date().toJSON().slice(0, 22) +
-        ext;
-      const url = await this.client.presignedPutObject(
-        bucketName,
-        objectName,
-        expiry,
-      );
-      return {
-        url,
-        objectName,
-      };
-    } catch (err) {
-      console.log(err);
-      throw err;
     }
   }
 

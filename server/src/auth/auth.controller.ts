@@ -4,16 +4,19 @@ import { RegisterDto } from './dto/register.dto';
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import { Public } from './decorators/public.decorator';
 
-@Controller('auth')
+@Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('/register')
   async register(@Body() dto: RegisterDto) {
     return await this.authService.register(dto);
   }
 
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   async login(@Req() req) {

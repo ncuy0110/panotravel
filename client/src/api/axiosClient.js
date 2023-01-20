@@ -1,10 +1,12 @@
 import axios from "axios";
 import { parse, stringify } from "qs";
+import History from "@/history.js";
+import { toast } from "react-toastify";
 
 const axiosClient = axios.create({
-  baseURL: "http://localhost:3000/api/v1/",
+  baseURL: import.meta.env.VITE_BASE_API_URL,
   headers: {
-    "Content-Type": "application/json",
+      "Content-Type": "application/json",
   },
   paramsSerializer: {
     encode: parse,
@@ -28,5 +30,37 @@ axiosClient.interceptors.response.use(
     throw error;
   }
 );
+export const configAuth = () => {
+  return {
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("accessToken"),
+    },
+  };
+};
+
+export const getWithAuth = async (url) => {
+  return await axiosClient.get(url, configAuth());
+};
+
+export const postFormData = async (url, formData) => {
+  return await axiosClient.post(url, formData, {
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("accessToken"),
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const postWithAuth = async (url, data) => {
+  return await axiosClient.post(url, data, configAuth());
+};
+
+export const putWithAuth = async (url, data) => {
+  return await axiosClient.put(url, data, configAuth());
+};
+
+export const deleteWithAuth = async (url) => {
+  return await axiosClient.delete(url, configAuth());
+};
 
 export default axiosClient;

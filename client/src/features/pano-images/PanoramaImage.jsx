@@ -1,4 +1,4 @@
-import myImage from "../../assets/demo_pano.jpeg";
+import myImage from "@/assets/demo_pano.jpeg";
 import { Pannellum } from "pannellum-react";
 
 function PanoramaImage() {
