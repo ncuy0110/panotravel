@@ -6,9 +6,11 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { ZoneModule } from './zone/zone.module';
 import { ImageModule } from './image/image.module';
-import { HotspotModule } from './hotspot/hotspot.module';
 import { ConfigModule } from '@nestjs/config';
 import { MinioClientModule } from './minio-client/minio-client.module';
+import { HotSpotModule } from './hot-spot/hot-spot.module';
+import { APP_GUARD, RouterModule } from '@nestjs/core';
+import { AuthenticationGuard } from './auth/guards/auth.guard';
 
 @Module({
   imports: [
@@ -18,10 +20,42 @@ import { MinioClientModule } from './minio-client/minio-client.module';
     AuthModule,
     ZoneModule,
     ImageModule,
-    HotspotModule,
+    HotSpotModule,
     MinioClientModule,
+    RouterModule.register([
+      {
+        path: '/auth',
+        module: AuthModule,
+      },
+      {
+        path: '/user',
+        module: UserModule,
+      },
+      {
+        path: '/zone',
+        module: ZoneModule,
+        children: [
+          {
+            path: '/:zoneId/image',
+            module: ImageModule,
+            children: [
+              {
+                path: '/:imageId/hot-spot',
+                module: HotSpotModule,
+              },
+            ],
+          },
+        ],
+      },
+    ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthenticationGuard,
+    },
+  ],
 })
 export class AppModule {}

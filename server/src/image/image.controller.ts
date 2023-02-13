@@ -1,25 +1,47 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UploadedFile,
+} from '@nestjs/common';
 import { ImageService } from './image.service';
 import { CreateImageDto } from './dto/create-image.dto';
 import { UpdateImageDto } from './dto/update-image.dto';
+import { Req, UseInterceptors } from '@nestjs/common/decorators';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-@Controller('image')
+@Controller()
 export class ImageController {
   constructor(private readonly imageService: ImageService) {}
 
   @Post()
-  create(@Body() createImageDto: CreateImageDto) {
-    return this.imageService.create(createImageDto);
+  @UseInterceptors(FileInterceptor('image'))
+  async create(
+    @Req() req,
+    @Param('zoneId') zoneId: string,
+    @Body() createImageDto: CreateImageDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.imageService.create(
+      req.user.id,
+      +zoneId,
+      createImageDto,
+      file,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.imageService.findAll();
+  findAll(@Param('zoneId') zoneId: string) {
+    return this.imageService.findAll(+zoneId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.imageService.findOne(+id);
+  @Get(':imageId')
+  findOne(@Param('zoneId') zoneId: string, @Param('imageId') imageId: string) {
+    return this.imageService.findOne(+zoneId, +imageId);
   }
 
   @Patch(':id')

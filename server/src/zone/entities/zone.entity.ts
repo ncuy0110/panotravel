@@ -6,6 +6,7 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -21,6 +22,15 @@ export class Zone {
   @Column('nvarchar', { nullable: false, length: 1000 })
   desc: string;
 
+  @Column('boolean', { nullable: false, default: false, select: false })
+  deleted: boolean;
+
+  @Column({ nullable: true })
+  location: string = null;
+
+  @Column({nullable: true})
+  address: string = null;
+
   @OneToMany(() => Image, (image) => image.zone, { cascade: true })
   images: Image[];
 
@@ -31,5 +41,5 @@ export class Zone {
   created: Date;
 
   @UpdateDateColumn()
-  updated;
+  updated: Date;
 }

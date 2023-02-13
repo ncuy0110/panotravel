@@ -1,15 +1,13 @@
-import { hashPassword } from './../password.helper';
 import { Zone } from './../../zone/entities/zone.entity';
 import {
-  BeforeInsert,
   Column,
   CreateDateColumn,
   Entity,
   OneToMany,
-  PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Image } from 'src/image/entities/image.entity';
 
 @Entity()
 export class User {
@@ -27,6 +25,9 @@ export class User {
 
   @OneToMany(() => Zone, (zone) => zone.owner)
   zones: Zone[];
+
+  @OneToMany(() => Image, (image) => image.creator)
+  images: Image[];
 
   @CreateDateColumn()
   created: Date;

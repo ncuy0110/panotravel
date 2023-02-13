@@ -1,12 +1,17 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { GetUrlPutObjectDto } from './dto/get-url-put-object.dto';
+import { AuthenticationGuard } from 'src/auth/guards/auth.guard';
 import { MinioClientService } from './minio-client.service';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Public } from 'src/auth/decorators/public.decorator';
+import { Get, Param } from '@nestjs/common/decorators';
 
 @Controller('minio-client')
 export class MinioClientController {
-  constructor(private readonly minioClientService: MinioClientService) {}
+  constructor(private minioService: MinioClientService) {}
 
-  @Get('/presigned-get-url/:objectName')
-  async getPresignedGetUrl(@Param('objectName') objectName: string) {
-    return await this.minioClientService.getUrlGetObject(objectName);
+  @Public()
+  @Get('/presigned-get-object/:objectName')
+  async requestPresignedGetObject(@Param('objectName') objectName: string) {
+    return await this.minioService.getUrlGetObject(objectName);
   }
 }
